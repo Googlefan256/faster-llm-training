@@ -9,6 +9,5 @@ fn main() -> anyhow::Result<()> {
     tensor.drop(&handle)?;
     lhs.drop(&handle)?;
     handle.sync()?;
-    handle.drop()?;
     Ok(())
 }
