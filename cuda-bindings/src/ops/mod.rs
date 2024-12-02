@@ -1,6 +1,10 @@
 mod add;
 pub use add::*;
-mod gelu;
-pub use gelu::*;
+mod div;
+pub use div::*;
 mod mul;
 pub use mul::*;
+mod square;
+pub use square::*;
+mod sqrt;
+pub use sqrt::*;
