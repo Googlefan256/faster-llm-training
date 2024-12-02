@@ -6,7 +6,7 @@ use crate::{
     CudaHandle, Tensor,
 };
 
-pub fn add(lhs: &Tensor, rhs: &Tensor, handle: &CudaHandle) -> anyhow::Result<Tensor> {
+pub fn add_forward(lhs: &Tensor, rhs: &Tensor, handle: &CudaHandle) -> anyhow::Result<Tensor> {
     let res = rhs.clone(handle)?;
     check_cublas_status(unsafe {
         cublasAxpyEx(

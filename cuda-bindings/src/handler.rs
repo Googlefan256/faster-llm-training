@@ -2,8 +2,8 @@ use std::mem::MaybeUninit;
 
 use crate::{
     bindings::{
-        cublasCreate_v2, cublasDestroy_v2, cublasHandle_t, cudaStreamCreate, cudaStreamDestroy,
-        cudaStreamSynchronize, cudaStream_t,
+        cublasCreate_v2, cublasDestroy_v2, cublasHandle_t, cublasSetStream_v2, cudaStreamCreate,
+        cudaStreamDestroy, cudaStreamSynchronize, cudaStream_t,
     },
     util::{check_cublas_status, check_status},
 };
@@ -25,12 +25,14 @@ impl CudaHandle {
             check_cublas_status(cublasCreate_v2(handle.as_mut_ptr()))?;
             handle.assume_init()
         };
+        check_cublas_status(unsafe { cublasSetStream_v2(handle, stream) })?;
         Ok(Self { stream, handle })
     }
     #[inline]
     pub(crate) fn stream(&self) -> &cudaStream_t {
         &self.stream
     }
+    #[inline]
     pub(crate) fn handle(&self) -> &cublasHandle_t {
         &self.handle
     }
