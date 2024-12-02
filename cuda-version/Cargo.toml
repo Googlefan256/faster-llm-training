@@ -1,0 +1,8 @@
+[package]
+name = "cuda-version"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.93"
+cuda-bindings = { path = "../cuda-bindings" }

@@ -1,6 +1,6 @@
 use candle_core::{DType, Device, Tensor};
 use candle_nn::{optim::AdamW, Optimizer};
-use llmrs::model::gpt::GPT;
+use candle_version::model::gpt::GPT;
 use tokenizers::Tokenizer;
 
 fn main() -> anyhow::Result<()> {

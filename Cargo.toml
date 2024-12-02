@@ -1,14 +1,3 @@
-[package]
-name = "llmrs"
-version = "0.1.0"
-edition = "2021"
-
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[dependencies]
-anyhow = "1.0.93"
-candle-core = { git = "https://github.com/huggingface/candle.git", version = "0.8.0", features = ["cuda", "cudnn"] }
-candle-nn = { git = "https://github.com/huggingface/candle.git", version = "0.8.0", features = ["cuda"] }
-hf-hub = { version = "0.3.2", features = ["tokio"] }
-tokenizers = { version = "0.21.0", features = ["http"] }
+[workspace]
+resolver = "2"
+members = ["./candle-version", "./cuda-build", "./cuda-bindings", "cuda-version"]

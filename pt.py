@@ -12,7 +12,7 @@ torch.backends.cuda.enable_cudnn_sdp(False)
 torch.backends.cuda.enable_mem_efficient_sdp(False)
 torch.backends.cudnn.allow_tf32 = True
 torch.backends.cudnn.enabled = False
-torch.set_float32_matmul_precision('high')
+torch.set_float32_matmul_precision("high")
 
 
 class Rotary(torch.nn.Module):
