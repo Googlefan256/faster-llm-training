@@ -44,3 +44,10 @@ impl CudaHandle {
         Ok(())
     }
 }
+
+impl Drop for CudaHandle {
+    fn drop(&mut self) {
+        check_status(unsafe { cudaStreamDestroy(self.stream) }).unwrap();
+        check_cublas_status(unsafe { cublasDestroy_v2(self.handle) }).unwrap();
+    }
+}

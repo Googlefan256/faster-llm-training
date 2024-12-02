@@ -15,6 +15,5 @@ fn main() -> anyhow::Result<()> {
     lhs.drop(&handle)?;
     rhs.drop(&handle)?;
     handle.sync()?;
-    handle.drop()?;
     Ok(())
 }
