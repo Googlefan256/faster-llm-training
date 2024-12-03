@@ -6,7 +6,7 @@ use crate::{
     CudaHandle, Tensor,
 };
 
-pub fn add_forward(lhs: &Tensor, rhs: &Tensor, handle: &CudaHandle) -> anyhow::Result<Tensor> {
+pub fn add(lhs: &Tensor, rhs: &Tensor, handle: &CudaHandle) -> anyhow::Result<Tensor> {
     let res = rhs.clone(handle)?;
     check_cublas_status(unsafe {
         cublasAxpyEx(
@@ -26,46 +26,38 @@ pub fn add_forward(lhs: &Tensor, rhs: &Tensor, handle: &CudaHandle) -> anyhow::R
     Ok(res)
 }
 
-pub fn add_backward(
-    output_grad: &Tensor,
-    lhs: &Tensor,
-    rhs: &Tensor,
-    handle: &CudaHandle,
-) -> anyhow::Result<()> {
-    if let Some(grad) = lhs.grad.as_ref() {
-        check_cublas_status(unsafe {
-            cublasAxpyEx(
-                *handle.handle(),
-                grad.size as i32,
-                &1.0_f32 as *const _ as *const c_void,
-                cudaDataType_t::CUDA_R_32F,
-                output_grad.ptr,
-                cudaDataType_t::CUDA_R_16BF,
-                1,
-                grad.ptr,
-                cudaDataType_t::CUDA_R_16BF,
-                1,
-                cudaDataType_t::CUDA_R_32F,
-            )
-        })?;
-    }
-    if let Some(grad) = rhs.grad.as_ref() {
-        check_cublas_status(unsafe {
-            cublasAxpyEx(
-                *handle.handle(),
-                grad.size as i32,
-                &1.0_f32 as *const _ as *const c_void,
-                cudaDataType_t::CUDA_R_32F,
-                output_grad.ptr,
-                cudaDataType_t::CUDA_R_16BF,
-                1,
-                grad.ptr,
-                cudaDataType_t::CUDA_R_16BF,
-                1,
-                cudaDataType_t::CUDA_R_32F,
-            )
-        })?;
-    }
-
-    Ok(())
+pub fn add_backward(output_grad: &Tensor, handle: &CudaHandle) -> anyhow::Result<(Tensor, Tensor)> {
+    let lhs_grad = output_grad.clone(handle)?;
+    check_cublas_status(unsafe {
+        cublasAxpyEx(
+            *handle.handle(),
+            lhs_grad.size as i32,
+            &1.0_f32 as *const _ as *const c_void,
+            cudaDataType_t::CUDA_R_32F,
+            output_grad.ptr,
+            cudaDataType_t::CUDA_R_16BF,
+            1,
+            lhs_grad.ptr,
+            cudaDataType_t::CUDA_R_16BF,
+            1,
+            cudaDataType_t::CUDA_R_32F,
+        )
+    })?;
+    let rhs_grad = output_grad.clone(handle)?;
+    check_cublas_status(unsafe {
+        cublasAxpyEx(
+            *handle.handle(),
+            rhs_grad.size as i32,
+            &1.0_f32 as *const _ as *const c_void,
+            cudaDataType_t::CUDA_R_32F,
+            output_grad.ptr,
+            cudaDataType_t::CUDA_R_16BF,
+            1,
+            rhs_grad.ptr,
+            cudaDataType_t::CUDA_R_16BF,
+            1,
+            cudaDataType_t::CUDA_R_32F,
+        )
+    })?;
+    Ok((lhs_grad, rhs_grad))
 }
